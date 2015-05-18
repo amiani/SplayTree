@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-// Self-Adjusting Binary Search (Splay) Tree
+// Self-Adjusting Binary (Splay) Tree
 // Amiani Johns
 template <typename T>
 class SplayTree
@@ -9,10 +9,11 @@ class SplayTree
     struct Node
     {
         Node() { children.fill(nullptr); }
-        Node(int _key, T _data, Node* _parent) 
-            : key(_key), data(_data), parent(_parent) 
+        Node(int key, T data, Node* parent) 
+            : key(key), data(data), parent(parent) 
             { children.fill(nullptr); }
-        Node& operator=(Node _node);
+        //Node(Node node); implement this
+        Node& operator=(Node node);
     
         int key;
         T data;
@@ -22,8 +23,8 @@ class SplayTree
 
 public:
     SplayTree() : root(nullptr) {}
-    SplayTree(const SplayTree &_tree);
-    SplayTree& operator=(const SplayTree &_tree);
+    SplayTree(const SplayTree &tree);
+    SplayTree& operator=(const SplayTree &tree);
     ~SplayTree();
 
     T* find(const int &key);

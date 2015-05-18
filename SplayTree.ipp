@@ -5,30 +5,29 @@
 #include "SplayTree.h"
 
 template <typename T>
-typename SplayTree<T>::Node& SplayTree<T>::Node::operator=(Node _node) // Not working :(
+typename SplayTree<T>::Node& SplayTree<T>::Node::operator=(Node node)
 {
-    key = _node.key;
-    data = _node.data;
+    this.key = node.key;
+    this.data = node.data;
 
-    std::swap(*children[0], *_node.children[0]);
-    std::swap(*children[1], *_node.children[1]);
+    this.children[0] = node.children[0];
+    this.children[1] = node.children[1];
 
     return *this;
 }
 
 template <typename T>
-SplayTree<T>::SplayTree(const SplayTree &_tree)
+SplayTree<T>::SplayTree(const SplayTree &tree)
 {
-    root = new Node;
-    root = _tree.root;
+    root = new Node(tree->root);
 }
 
 template <typename T>
-SplayTree<T>& SplayTree<T>::operator=(const SplayTree &_tree)
+SplayTree<T>& SplayTree<T>::operator=(const SplayTree &tree)
 {
     deleteTree(root);
     root = new Node;
-    *root = *_tree.root;
+    *root = *tree.root;
 }
 
 template <typename T>
@@ -117,6 +116,36 @@ void SplayTree<T>::remove(const int &key)
 }
 
 template <typename T>
+void SplayTree<T>::displayTree() const
+{
+    int level = 0;
+
+    std::vector<Node*> nodes;
+    nodes.push_back(root);
+
+    while (!nodes.empty()) {
+        std::cout << "Level" << level << ": ";
+        for (Node *node : nodes) {
+            std::cout << node->key << "p";
+            if (node->parent) std::cout << node->parent->key << " ";
+        }
+        std::cout << std::endl;
+
+        int size = nodes.size();
+        for (int i = 0; i != size; ++i) {
+            for (Node *child : (*nodes.begin())->children)
+                if (child) nodes.push_back(child);
+
+            nodes.erase(nodes.begin());
+        }
+
+        ++level;
+    }
+
+    std::cout << std::endl;
+}
+
+template <typename T>
 void SplayTree<T>::splay(Node* target)
 {
     if (target == root) return;
@@ -124,7 +153,6 @@ void SplayTree<T>::splay(Node* target)
     while (target->parent) {
         Node* parent = target->parent;
         Node* grandparent = parent->parent;
-
         int targetside = parent->children[1] == target;
 
         if (grandparent) {
@@ -133,13 +161,12 @@ void SplayTree<T>::splay(Node* target)
             if (parentside == targetside) {     // Zig-Zig case
                 rotate(parent, parentside);
                 rotate(target, targetside);
-            } else {                              // Zig-Zag case
+            } else {                            // Zig-Zag case
                 rotate(target, targetside);
                 rotate(target, parentside);
             }
         } else
-            rotate(target, targetside);                             // Child of root case
-            
+            rotate(target, targetside);         // Child of root case            
     }
 
     root = target;	
@@ -173,41 +200,11 @@ SplayTree<T>::~SplayTree()
 template <typename T>
 void SplayTree<T>::deleteTree(Node* node)
 {
+    std::cout << root->key << std::endl;
     for (Node* child : node->children)
         if (child) {
-            std::cout << child->key << std::endl;
             deleteTree(child);
         }
     delete node;
     node = nullptr;
-}
-
-template <typename T>
-void SplayTree<T>::displayTree() const
-{
-    int level = 0;
-
-    std::vector<Node*> nodes;
-    nodes.push_back(root);
-
-    while (!nodes.empty()) {
-        std::cout << "Level" << level << ": ";
-        for (Node *node : nodes) {
-            std::cout << node->key << "p";
-            if (node->parent) std::cout << node->parent->key << " ";
-        }
-        std::cout << std::endl;
-
-        int size = nodes.size();
-        for (int i = 0; i != size; ++i) {
-            for (Node *child : (*nodes.begin())->children)
-                if (child) nodes.push_back(child);
-
-            nodes.erase(nodes.begin());
-        }
-
-        ++level;
-    }
-
-    std::cout << std::endl;
 }
