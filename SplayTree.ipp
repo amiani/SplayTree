@@ -17,18 +17,18 @@ typename SplayTree<T>::Node& SplayTree<T>::Node::operator=(Node _node) // Not wo
 }
 
 template <typename T>
-SplayTree<T>::SplayTree(const SplayTree &_tree)
+SplayTree<T>::SplayTree(const SplayTree &tree)
 {
     root = new Node;
-    root = _tree.root;
+    root = tree.root;
 }
 
 template <typename T>
-SplayTree<T>& SplayTree<T>::operator=(const SplayTree &_tree)
+SplayTree<T>& SplayTree<T>::operator=(const SplayTree &tree)
 {
     deleteTree(root);
     root = new Node;
-    *root = *_tree.root;
+    root = tree.root;
 }
 
 template <typename T>
@@ -170,6 +170,7 @@ SplayTree<T>::~SplayTree()
     if (root) deleteTree(root);
 }
 
+//recursively deletes the tree
 template <typename T>
 void SplayTree<T>::deleteTree(Node* node)
 {
