@@ -5,18 +5,6 @@
 #include "SplayTree.h"
 
 template <typename T>
-typename SplayTree<T>::Node& SplayTree<T>::Node::operator=(Node _node) // Not working :(
-{
-    key = _node.key;
-    data = _node.data;
-
-    std::swap(*children[0], *_node.children[0]);
-    std::swap(*children[1], *_node.children[1]);
-
-    return *this;
-}
-
-template <typename T>
 SplayTree<T>::SplayTree(const SplayTree &tree)
 {
     root = new Node;
@@ -176,7 +164,7 @@ void SplayTree<T>::deleteTree(Node* node)
 {
     for (Node* child : node->children)
         if (child) {
-            std::cout << child->key << std::endl;
+            std::cout << node->key << " " << child->key << std::endl;
             deleteTree(child);
         }
     delete node;

@@ -12,7 +12,6 @@ class SplayTree
         Node(int _key, T _data, Node* _parent) 
             : key(_key), data(_data), parent(_parent) 
             { children.fill(nullptr); }
-        Node& operator=(Node _node);
     
         int key;
         T data;
