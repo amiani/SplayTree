@@ -5,24 +5,31 @@
 #include "SplayTree.h"
 
 template <typename T>
-SplayTree<T>::SplayTree(const SplayTree &tree)
-{
+SplayTree<T>::SplayTree(const SplayTree &tree) {
     root = new Node;
-    root = tree.root;
+    deepCopy(root, tree.root, nullptr);
 }
 
 template <typename T>
-SplayTree<T>& SplayTree<T>::operator=(const SplayTree &tree)
-{
+void SplayTree<T>::deepCopy(Node* thisnode, Node* thatnode, Node* parent) const {
+    if (thatnode) {
+        *thisnode = *thatnode;
+        thisnode->parent = parent;
+        for (int i = 0; i != 2; i++)
+            deepCopy(thisnode->children[i], thatnode->children[i], thisnode);
+    }
+}
+
+template <typename T>
+SplayTree<T>& SplayTree<T>::operator=(const SplayTree &tree) {
     deleteTree(root);
     root = new Node;
     root = tree.root;
 }
 
 template <typename T>
-T* SplayTree<T>::find(const int &key)
-{
-    std::function<Node*(Node*)> FSearch = [&](Node* node) {
+T* SplayTree<T>::find(const int &key) {
+    std::function<Node*(Node*)> fSearch = [&](Node* node) {
         if (node->key == key) {
             splay(node);
             return node;
@@ -30,40 +37,38 @@ T* SplayTree<T>::find(const int &key)
         
         unsigned side = node->key < key;
         if (node->children[side])
-            return FSearch(node->children[side]);
+            return fSearch(node->children[side]);
         else {
             splay(node);
             return nullptr;
         }
     };
 
-    Node node = FSearch(root);
+    Node node = fSearch(root);
     if (node) return &node->data;
     else return nullptr;
 }
 
 template <typename T>
-void SplayTree<T>::insert(const int &key, const T &data)
-{
+void SplayTree<T>::insert(const int &key, const T &data) {
     if (!root) {
         root = new Node(key, data, nullptr);
         return;
     }
 
-    std::function<Node*(Node*)> ISearch = [&](Node* node) {
+    std::function<Node*(Node*)> iSearch = [&](Node* node) {
         unsigned side = node->key < key;
         if (!node->children[side])
             return node->children[side] = new Node(key, data, node);
         else
-            ISearch(node->children[side]);
+            iSearch(node->children[side]);
     };
 
-    splay(ISearch(root));
+    splay(iSearch(root));
 }
 
 template <typename T>
-void SplayTree<T>::remove(const int &key)
-{
+void SplayTree<T>::remove(const int &key) {
     if (!root) return;
 
     Node head;
@@ -105,8 +110,7 @@ void SplayTree<T>::remove(const int &key)
 }
 
 template <typename T>
-void SplayTree<T>::splay(Node* target)
-{
+void SplayTree<T>::splay(Node* target) {
     if (target == root) return;
 
     while (target->parent) {
@@ -134,8 +138,7 @@ void SplayTree<T>::splay(Node* target)
 }
 
 template <typename T>
-void SplayTree<T>::rotate(Node* target, const int &targetside)
-{	
+void SplayTree<T>::rotate(Node* target, const int &targetside) {	
     Node *parent = target->parent;
     Node *grandparent = parent->parent;
     Node *transchild = target->children[!targetside]; // child to be transferred to target's parent
@@ -153,27 +156,28 @@ void SplayTree<T>::rotate(Node* target, const int &targetside)
 }
 
 template <typename T>
-SplayTree<T>::~SplayTree()
-{
+SplayTree<T>::~SplayTree() {
+    std::cout << "rootkey: " << root->key << std::endl;
     if (root) deleteTree(root);
+
 }
 
 //recursively deletes the tree
 template <typename T>
-void SplayTree<T>::deleteTree(Node* node)
-{
-    for (Node* child : node->children)
-        if (child) {
-            std::cout << node->key << " " << child->key << std::endl;
-            deleteTree(child);
+void SplayTree<T>::deleteTree(Node* node) {
+    std::cout << node->key << std::endl;
+        for (Node* child : node->children) {
+            if (child) {
+                deleteTree(child);
+            }
         }
-    delete node;
-    node = nullptr;
+
+        delete node;
+        node = nullptr;
 }
 
 template <typename T>
-void SplayTree<T>::displayTree() const
-{
+void SplayTree<T>::displayTree() const {
     int level = 0;
 
     std::vector<Node*> nodes;

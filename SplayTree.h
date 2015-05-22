@@ -13,6 +13,13 @@ class SplayTree
             : key(_key), data(_data), parent(_parent) 
             { children.fill(nullptr); }
     
+        Node& operator=(Node that) {
+            key = that.key;
+            data = that.data;
+            parent = that.parent;
+            return *this;
+        }
+
         int key;
         T data;
         std::array<Node*, 2> children;
@@ -31,11 +38,13 @@ public:
     void displayTree() const;
 
 private:
+    void deepCopy(Node* thisnode, Node* node, Node* parent) const;
     void splay(Node* target);
     void rotate(Node* target, const int &targetside);
     void deleteTree(Node* node);
 
     Node* root;
+    int counter;
 };
 
 #include "SplayTree.ipp"
